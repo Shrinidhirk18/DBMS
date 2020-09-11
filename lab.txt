@@ -1,0 +1,6 @@
+create table student(usn integer primary key,name varchar(10),phno integer ,branch varchar(10));
+insert into student values(1,'Shrinidhi',1234,'CS');
+insert into student values(2,'Anu',3456,'EC');
+insert into student values(3,'Ashwini',4567,'IS');
+insert into student values(4,'Sushma',6789,'CS');
+insert into student values(5,'Shifa',9123,'IS');                 
