@@ -1,0 +1,182 @@
+**Schema (MySQL v5.7)**
+
+    create table department (dno integer primary key,dname varchar(20),mgrdate date);
+    create table employee (ssn integer primary key, name varchar(20), address varchar(20), sex varchar(1), salary integer ,dno integer,foreign key(dno) references department(dno) on delete cascade);
+    create table dlocation (dno integer ,dloc varchar(20), primary key(dno,dloc),foreign key(dno) references department(dno) on delete cascade);
+    create table project (pno integer primary key ,pname varchar(20),plocation varchar(20),dno integer,foreign key(dno) references department(dno));
+    create table workson(ssn integer, pno integer, hours integer,primary key(ssn,pno),foreign key(ssn) references employee(ssn) on delete cascade,foreign key(pno) references project(pno)on delete cascade);
+    
+                                                                                                                                              
+                                                                                                                                              
+    insert into department values(1,'accounts','2020-06-18');
+    insert into department values(2,'research','2020-07-28');
+    insert into department values(3,'administer','2020-04-04');                                                                                                                                          
+    insert into department values(4,'xxx','2020-05-05');
+    insert into department values(5,'yyy','2020-08-08'); 
+                                                                                                                                              
+                                                                                                                                              
+    insert into employee values( 100,'ram','bangalore','m',50000,4);                                                                                                                                         
+    insert into employee values( 101,'sham','mangalore','m',35000,3);                                                                                                                                            
+    insert into employee values( 102,'scott','bangalore','m',40000,1);                                                                                                                                           
+    insert into employee values( 103,'sheela','mangalore','m',25000,2);                                                                                                                                           
+    insert into employee values( 104,'anu','udupi','m',500000,5);                                                                                                                                            
+    insert into employee values( 105,'nidhi','mysore','m',550000,1);                                                                                                                                            
+    insert into employee values( 106,'ragu','bangalore','m',650000,1);                                                                                                                                           
+    insert into employee values( 107,'raj','mangalore','m',710000,1);                                                                                                                                            
+    insert into employee values( 108,'xyz','udupi','m',80000,1);                                                                                                                                            
+    insert into employee values( 109,'abc','mysore','m',450000,1);  
+                                                                                                                                              
+                                                                                                                                              
+    insert into dlocation values(1,'mysore');
+    insert into dlocation values(2,'delhi');                                                                                                                                          
+    insert into dlocation values(3,'goa gujarat');                                                                                                                                          
+    insert into dlocation values(4,'bangalore');                                                                                                                                   
+    insert into dlocation values(5,'sss');                                                                                                                                          
+    
+                                                                                                                                              
+    insert into project values(11,'iot','bangalore',5);                                                                                                                                         
+    insert into project values(12,'ccc','bangla',4);                                                                                                                                            
+    insert into project values(13,'ddd','usa',3);                                                                                                                                            
+    insert into project values(14,'eee','korea',2);                                                                                                                                            
+    insert into project values(15,'fff','vvv',1);
+                                                                                                                                              
+    insert into workson values(100,11,5);                                                                                                                                          
+    insert into workson values(101,14,12);                                                                                                                                            
+    insert into workson values(102,13,4);                                                                                                                                            
+    insert into workson values(103,12,7);                                                                                                                                           
+    insert into workson values(104,15,8);                                                                                                                                            
+
+---
+
+**Query #1**
+
+    alter table department add magrssn integer references employee(ssn);
+
+There are no results to be displayed.
+
+---
+**Query #2**
+
+    update department set magrssn=102 where dno=1;
+
+There are no results to be displayed.
+
+---
+**Query #3**
+
+    update department set magrssn=101 where dno=2;
+
+There are no results to be displayed.
+
+---
+**Query #4**
+
+    update department set magrssn=103 where dno=3;
+
+There are no results to be displayed.
+
+---
+**Query #5**
+
+    update department set magrssn=105 where dno=4;
+
+There are no results to be displayed.
+
+---
+**Query #6**
+
+    update department set magrssn=105 where dno=5;
+
+There are no results to be displayed.
+
+---
+**Query #7**
+
+    alter table employee add superssn integer references employee(ssn);
+
+There are no results to be displayed.
+
+---
+**Query #8**
+
+    update employee set superssn=103 where ssn=101;
+
+There are no results to be displayed.
+
+---
+**Query #9**
+
+    update employee set superssn=101 where ssn=102;
+
+There are no results to be displayed.
+
+---
+**Query #10**
+
+    update employee set superssn=102 where ssn=103;
+
+There are no results to be displayed.
+
+---
+**Query #11**
+
+    update employee set superssn=105 where ssn=104;
+
+There are no results to be displayed.
+
+---
+**Query #12**
+
+    update employee set superssn=104 where ssn=105;
+
+There are no results to be displayed.
+
+---
+**Query #13**
+
+    (select pno from employee e, workson w where e.ssn=w.ssn and name='scott') union (select pno from employee e,department d,project p where e.ssn=d.magrssn  and d.dno=p.dno and name='scott');
+
+| pno |
+| --- |
+| 13  |
+| 15  |
+
+---
+**Query #14**
+
+    select name,salary "old salary", salary*1.1 "new salary" from employee e,workson w, project p where e.ssn=w.ssn and w.pno=p.pno and p.pname='iot';
+
+| name | old salary | new salary |
+| ---- | ---------- | ---------- |
+| ram  | 50000      | 55000.0    |
+
+---
+**Query #15**
+
+    select sum(salary),max(salary),min(salary),avg(salary) from employee e,department d where e.dno=d.dno and d.dname='accounts';
+
+| sum(salary) | max(salary) | min(salary) | avg(salary) |
+| ----------- | ----------- | ----------- | ----------- |
+| 2480000     | 710000      | 40000       | 413333.3333 |
+
+---
+**Query #16**
+
+    select e.name from employee e where not exists(select pno from project p where dno=5 and p.pno not in(select pno from workson where e.ssn=ssn));
+
+| name |
+| ---- |
+| ram  |
+
+---
+**Query #17**
+
+    select dno,count(ssn) from employee e where salary>600000 and dno in(select dno from employee group by dno having count(ssn)>5) group by dno;
+
+| dno | count(ssn) |
+| --- | ---------- |
+| 1   | 2          |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/)
